@@ -1,0 +1,171 @@
+<html>
+  <head>
+    <title>Select Annotations based on Quality</title>
+    <!-- simpleamt depends on these libraries -->
+    <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js'></script>    
+    <!-- end of required libraries -->
+    <script src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js'></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      #button-div {
+        margin-bottom: 10px;
+      }
+      #counter {
+        margin: 0 10px;
+        font-size: 20pt;
+        font-weight: bold;
+      }
+      img {
+        width: 1000px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <h2>Identify the objects you feel describe the image below most completely. Which of the two annotation sets correctly label and isolate more of the objects you identified?</h2>
+    </div>
+
+    <div class='container-fluid'>
+      <div class='row'>
+        <div class='col-xs-12 text-center'>
+          <div id='image-container'>
+          </div>
+        </div>
+      </div>
+      <div class='row' style="display:block; white-space:nowrap">
+        <span class='col-xs-4 col-xs-offset-4'><b>Annotation Selection:&emsp;</b>
+            <input class="A" type="radio" id="A1" name="A" value="1">
+            <label for="Left">Left&ensp;</label>
+            <input class="A" type="radio" id="A2" name="A" value="2">
+            <label for="Right">Right</label>
+        </span>
+      </div>
+
+        <div class='col-xs-4 col-xs-offset-4 text-center' id='button-div'>
+          <button id='prev-btn' class='btn btn-lg btn-primary' disabled>Back</button>
+          <span id='counter'>
+            <span class='counter-top'></span> / <span class='counter-bottom'></span>
+          </span>
+          <button id='next-btn' class='btn btn-lg btn-primary' disabled>Next</button>
+        </div>
+      </div>
+    </div>
+
+    {% include "hit_templates/simpleamt.html" %}
+
+    <script>
+      $(function() {
+
+        // Define some default input.
+        var DEFAULT_INPUT = [
+          'https://live.staticflickr.com/3575/3365647249_5f442f56e8_b.jpg',
+          'https://live.staticflickr.com/4617/40150983442_5fc1afe90f_b.jpg',
+        ];
+
+        var input = null;
+
+        // Descriptions of images, parallel to input.
+        var descriptions = [];
+
+        // Some variables to track state of the HIT.
+        var idx = 0;
+        var enabled = false;
+
+        function main() {
+          // If this is a HIT on AMT, then replace the default input with the real input.
+          input = simpleamt.getInput(DEFAULT_INPUT);
+
+          // Enable the UI if the HIT is not in preview mode.
+          if (!simpleamt.isPreview()) {
+            enable_hit();
+          }
+
+          // Preload all images
+          var imgs = [];
+          _.each(input, function(img_url) {
+            var img = new Image();
+            img.onload = function() { console.log('loaded image from ' + img_url); };
+            img.src = img_url;
+          });
+
+          render();
+        }
+
+        // Use the current index to update the image and description
+        function render() {
+          // Set up the image
+          $('#image-container').empty();
+          $('<img>').attr('src', input[idx]).appendTo($('#image-container'));
+
+          // Refresh the counter
+          $('.counter-top').text(idx + 1);
+          $('.counter-bottom').text(input.length);
+          if (descriptions[idx] != null){
+            $('#A'+descriptions[idx]).prop("checked", true);
+          }
+          else{
+            $('input[name="A"]').removeAttr('checked');
+          }
+          // If the UI is enabled, enable or disable the buttons depending on
+          // the index.
+          if (enabled) {
+            var prev_btn = $('#prev-btn');
+            var next_btn = $('#next-btn');
+            prev_btn.prop('disabled', true);
+            next_btn.prop('disabled', true);
+            if (idx > 0) {
+              prev_btn.prop('disabled', false);
+            }
+            if (idx < input.length - 1) next_btn.prop('disabled', false);
+          }
+        }
+
+        // Update the index, and save the text in the text area.
+        function set_idx(new_idx) {
+          if (new_idx < 0 || new_idx >= input.length) return;
+          result = $('input[name="A"]:checked').val();
+          if (result == null) {
+              alert('Some inputs are not filled.');
+              return false;
+            }
+          descriptions[idx] = result;
+          idx = new_idx;
+          render();
+        }
+
+        // Enable the UI.
+        function enable_hit() {
+          enabled = true;
+          // Enable components
+          $('#next-btn').click(function() { set_idx(idx + 1) });
+          $('#prev-btn').click(function() { set_idx(idx - 1) });
+          $('#submit-btn').prop('disabled', false);
+
+          // Set up submit handler.
+          simpleamt.setupSubmit();
+          $('#submit-btn').click(function() {
+            result = $('input[name="A"]:checked').val();
+            if (result == null ) {
+              alert('Some inputs are not filled.');
+              return false;
+            }
+            descriptions[idx] = result;
+            if (descriptions.length<input.length) {
+              alert('Survey is incomplete.');
+              return false;
+            }
+            var output = _.map(_.zip(input, descriptions), function(x) {
+              return {'image_url': x[0], 'description': x[1]};
+            });
+            simpleamt.setOutput(output);
+          });
+        }
+
+        main();
+      });
+    </script>
+  </body>
+</html>
+

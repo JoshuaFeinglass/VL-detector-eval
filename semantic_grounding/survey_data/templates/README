@@ -1,0 +1,1 @@
+These templates have been designed to work with the simple-amt (https://github.com/jcjohnson/simple-amt) framework. They should be placed in the simple-amt/hit_templates/ directory, rendered, and linked to relevant images before use.

@@ -1,0 +1,223 @@
+<html>
+  <head>
+    <title>Rank Objects based on Caption</title>
+    <!-- simpleamt depends on these libraries -->
+    <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js'></script>    
+    <!-- end of required libraries -->
+    <script src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js'></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      #button-div {
+        margin-bottom: 10px;
+      }
+      #counter {
+        margin: 0 10px;
+        font-size: 20pt;
+        font-weight: bold;
+      }
+      img {
+        width: 1000px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <h2>Write a caption describing the image on the left on a piece of paper. Now select the relevance of each of the 5 labeled objects shown in the image on the right to your caption.</h2>
+    </div>
+
+    <div class='container-fluid'>
+      <div class='row'>
+        <div class='col-xs-12 text-center'>
+          <div id='image-container'>
+          </div>
+        </div>
+      </div>
+      <div class='row' style="display:block; white-space:nowrap">
+        <span class='col-xs-4 col-xs-offset-4'><b>Object A:&emsp;</b>
+            <input class="A" type="radio" id="A3" name="A" value="3">
+            <label for="Very Relevant">Very Relevant&ensp;</label>
+            <input class="A" type="radio" id="A2" name="A" value="2">
+            <label for="Somewhat Relevant">Somewhat Relevant&ensp;</label>
+            <input class="A" type="radio" id="A1" name="A" value="1">
+            <label for="Not Relevant">Not Relevant</label>
+        </span>
+        <span class='col-xs-4 col-xs-offset-4'><b>Object B:&emsp;</b>
+            <input class="B" type="radio" id="B3" name="B" value="3">
+            <label for="Very Relevant">Very Relevant&ensp;</label>
+            <input class="B" type="radio" id="B2" name="B" value="2">
+            <label for="Somewhat Relevant">Somewhat Relevant&ensp;</label>
+            <input class="B" type="radio" id="B1" name="B" value="1">
+            <label for="Not Relevant">Not Relevant</label>
+        </span>
+        <span class='col-xs-4 col-xs-offset-4'><b>Object C:&emsp;</b>
+            <input class="C" type="radio" id="C3" name="C" value="3">
+            <label for="Very Relevant">Very Relevant&ensp;</label>
+            <input class="C" type="radio" id="C2" name="C" value="2">
+            <label for="Somewhat Relevant">Somewhat Relevant&ensp;</label>
+            <input class="C" type="radio" id="C1" name="C" value="1">
+            <label for="Not Relevant">Not Relevant</label>
+        </span>
+        <span class='col-xs-4 col-xs-offset-4'><b>Object D:&emsp;</b>
+            <input class="D" type="radio" id="D3" name="D" value="3">
+            <label for="Very Relevant">Very Relevant&ensp;</label>
+            <input class="D" type="radio" id="D2" name="D" value="2">
+            <label for="Somewhat Relevant">Somewhat Relevant&ensp;</label>
+            <input class="D" type="radio" id="D1" name="D" value="1">
+            <label for="Not Relevant">Not Relevant</label>
+        </span>
+        <span class='col-xs-4 col-xs-offset-4'><b>Object E:&emsp;</b>
+            <input class="E" type="radio" id="E3" name="E" value="3">
+            <label for="Very Relevant">Very Relevant&ensp;</label>
+            <input class="E" type="radio" id="E2" name="E" value="2">
+            <label for="Somewhat Relevant">Somewhat Relevant&ensp;</label>
+            <input class="E" type="radio" id="E1" name="E" value="1">
+            <label for="Not Relevant">Not Relevant</label>
+        </span>
+      </div>
+
+        <div class='col-xs-4 col-xs-offset-4 text-center' id='button-div'>
+          <button id='prev-btn' class='btn btn-lg btn-primary' disabled>Back</button>
+          <span id='counter'>
+            <span class='counter-top'></span> / <span class='counter-bottom'></span>
+          </span>
+          <button id='next-btn' class='btn btn-lg btn-primary' disabled>Next</button>
+        </div>
+      </div>
+    </div>
+
+    {% include "hit_templates/simpleamt.html" %}
+
+    <script>
+      $(function() {
+
+        // Define some default input.
+        var DEFAULT_INPUT = [
+          'https://live.staticflickr.com/3575/3365647249_5f442f56e8_b.jpg',
+          'https://live.staticflickr.com/4617/40150983442_5fc1afe90f_b.jpg',
+        ];
+
+        var input = null;
+
+        // Descriptions of images, parallel to input.
+        var descriptions = [];
+
+        // Some variables to track state of the HIT.
+        var idx = 0;
+        var enabled = false;
+
+        function main() {
+          // If this is a HIT on AMT, then replace the default input with the real input.
+          input = simpleamt.getInput(DEFAULT_INPUT);
+
+          // Enable the UI if the HIT is not in preview mode.
+          if (!simpleamt.isPreview()) {
+            enable_hit();
+          }
+
+          // Preload all images
+          var imgs = [];
+          _.each(input, function(img_url) {
+            var img = new Image();
+            img.onload = function() { console.log('loaded image from ' + img_url); };
+            img.src = img_url;
+          });
+
+          render();
+        }
+
+        // Use the current index to update the image and description
+        function render() {
+          // Set up the image
+          $('#image-container').empty();
+          $('<img>').attr('src', input[idx]).appendTo($('#image-container'));
+
+          // Refresh the counter
+          $('.counter-top').text(idx + 1);
+          $('.counter-bottom').text(input.length);
+          if (descriptions[idx] != null){
+            $('#A'+descriptions[idx][0]).prop("checked", true);
+            $('#B'+descriptions[idx][1]).prop("checked", true);
+            $('#C'+descriptions[idx][2]).prop("checked", true);
+            $('#D'+descriptions[idx][3]).prop("checked", true);
+            $('#E'+descriptions[idx][4]).prop("checked", true);
+          }
+          else{
+            $('input[name="A"]').removeAttr('checked');
+            $('input[name="B"]').removeAttr('checked');
+            $('input[name="C"]').removeAttr('checked');
+            $('input[name="D"]').removeAttr('checked');
+            $('input[name="E"]').removeAttr('checked');
+          }
+          // If the UI is enabled, enable or disable the buttons depending on
+          // the index.
+          if (enabled) {
+            var prev_btn = $('#prev-btn');
+            var next_btn = $('#next-btn');
+            prev_btn.prop('disabled', true);
+            next_btn.prop('disabled', true);
+            if (idx > 0) {
+              prev_btn.prop('disabled', false);
+            }
+            if (idx < input.length - 1) next_btn.prop('disabled', false);
+          }
+        }
+
+        // Update the index, and save the text in the text area.
+        function set_idx(new_idx) {
+          if (new_idx < 0 || new_idx >= input.length) return;
+          var result = [];
+          result[0] = $('input[name="A"]:checked').val();
+          result[1] = $('input[name="B"]:checked').val();
+          result[2] = $('input[name="C"]:checked').val();
+          result[3] = $('input[name="D"]:checked').val();
+          result[4] = $('input[name="E"]:checked').val();
+          if (_.any(result, function(d) { return d == null })) {
+              alert('Some inputs are not filled.');
+              return false;
+            }
+          descriptions[idx] = result[0]+result[1]+result[2]+result[3]+result[4];
+          idx = new_idx;
+          render();
+        }
+
+        // Enable the UI.
+        function enable_hit() {
+          enabled = true;
+          // Enable components
+          $('#next-btn').click(function() { set_idx(idx + 1) });
+          $('#prev-btn').click(function() { set_idx(idx - 1) });
+          $('#submit-btn').prop('disabled', false);
+
+          // Set up submit handler.
+          simpleamt.setupSubmit();
+          $('#submit-btn').click(function() {
+            var result = [];
+            result[0] = $('input[name="A"]:checked').val();
+            result[1] = $('input[name="B"]:checked').val();
+            result[2] = $('input[name="C"]:checked').val();
+            result[3] = $('input[name="D"]:checked').val();
+            result[4] = $('input[name="E"]:checked').val();
+            if (_.any(result, function(d) { return d == null })) {
+              alert('Some inputs are not filled.');
+              return false;
+            }
+            descriptions[idx] = result[0]+result[1]+result[2]+result[3]+result[4];
+            if (descriptions.length<input.length) {
+              alert('Survey is incomplete.');
+              return false;
+            }
+            var output = _.map(_.zip(input, descriptions), function(x) {
+              return {'image_url': x[0], 'description': x[1]};
+            });
+            simpleamt.setOutput(output);
+          });
+        }
+
+        main();
+      });
+    </script>
+  </body>
+</html>
+
