@@ -25,8 +25,8 @@ Our benchmark is intended to be used for detectors utilizing the Visual Genome d
 | Detector | Precision (T=0.075) | Recall (T=0.075) | F1 Score (T=0.075) | Precision (T=0.30) | Recall (T=0.30) | F1 Score (T=0.30) |
 | :-------- | :-------: | :--------: | :-------: | :-------: | :--------: | ------- |
 | Neural Motifs (https://github.com/rowanz/neural-motifs) | 18.0 | 37.7 | 24.3 | 5.9 | 46.7 | 10.6 |
-| Unbiased SGG (https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch) | 22.9 | 18.7 | 40.0 | 25.5 | 5.2 | 47.2 | 9.4 |
-| Microsoft SGG Benchmark (https://github.com/microsoft/scene_graph_benchmark)   | 24.5 | 20.0 | 41.7 | 27.0 | 5.7 | 50.9 | 10.2 |
+| Unbiased SGG (https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch) | 18.7 | 40.0 | 25.5 | 5.2 | 47.2 | 9.4 |
+| Microsoft SGG Benchmark (https://github.com/microsoft/scene_graph_benchmark)   | 20.0 | 41.7 | 27.0 | 5.7 | 50.9 | 10.2 |
 
 ### Semantic Grounding Algorithm Usage
 Run 'python3 generate_human_survey_importance_scores.py' to generate a dictionary in './generated_COCO_survey_score.json' containing COCO survey image information and "weight" scores corresponding to annotation importance. 
