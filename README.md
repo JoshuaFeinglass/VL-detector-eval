@@ -6,7 +6,7 @@ This repo contains the implementation of WACV 2024 paper "Towards Addressing the
 arxiv: https://arxiv.org/abs/2309.00215
 
 ### Overview
-This project aims to adapt detector evaluation metrics to Vision-Language tasks using semantic grounding. The repo is divided into two directories: 'detector_benchmark' which provides an easy to use VL-specific benchmark for a proposed detector architecture (shown in Table 2 of the WACV 2024 paper) and 'semantic_grounding' which contains the implementation of the semantic grounding algorithm (described in Section 3.4 of the WACV 2024 paper). Human survey data including templates, annotation comparison images, and AMT responses (corresponding to Section 4.2 of the WACV 2024 paper) can also be found in 'semantic_grounding/survey_data/'. The table below
+This project aims to adapt detector evaluation metrics to Vision-Language tasks using semantic grounding. The repo is divided into two directories: 'detector_benchmark' which provides an easy to use VL-specific benchmark for a proposed detector architecture (shown in Table 2 of the WACV 2024 paper) and 'semantic_grounding' which contains the implementation of the semantic grounding algorithm (described in Section 3.4 of the WACV 2024 paper). Human survey data including templates, annotation comparison images, and AMT responses (corresponding to Section 4.2 of the WACV 2024 paper) can also be found in 'semantic_grounding/survey_data/'.
 
 ### Requirements
 You can run requirements/install.sh to quickly install all the requirements in an Anaconda environment. The requirements are:
