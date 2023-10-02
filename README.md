@@ -20,7 +20,7 @@ You can run requirements/install.sh to quickly install all the requirements in a
 - pygsp
 
 ### Detector Benchmark Usage
-Save the top 30 most confident proposals from your detector for the image ids provided in 'detector_benchmark/detector_input/vg_test_ids.txt' (urls for these images can be found in 'detector_benchmark/detector_input/image_data.json') as a binary file in the location 'detector_benchmark/baseline_proposals/my_detector_proposals.bin'. Binary files for the baselines used in the paper can also be found in 'detector_benchmark/baseline_proposals/' (their performance can also be found in Table 2 of the WACV 2024 paper). You can then evaluate your proposals or the baseline proposals by running 'python3 evaluate_proposals.py DETECTOR_PROPOSALS_FILE ANNOTATION_FILE' (ex: python3 evaluate_proposals.py motifs2018_proposals.bin vg_gt_thres30.json) where the ANNOTATION_FILE refers to one of the thresholded annotation sets found in 'detector_benchmark/thresholded_annotations'. **We recommend reporting Precision, Recall, and F1 score with both a threshold of 0.075 and 0.30 corresponding to 'vg_gt_thres075.json' and 'vg_gt_thres30.json', respectively**
+Our benchmark is intended to be used for detectors utilizing the Visual Genome dataset splits and categories from the paper https://arxiv.org/abs/1701.02426 and corresponding repository https://github.com/danfeiX/scene-graph-TF-release. Save the top 30 most confident proposals from your detector for the image ids provided in 'detector_benchmark/detector_input/vg_test_ids.txt' (urls for these images can be found in 'detector_benchmark/detector_input/image_data.json') as a binary file in the location 'detector_benchmark/baseline_proposals/my_detector_proposals.bin'. Binary files for the baselines used in the paper can also be found in 'detector_benchmark/baseline_proposals/' (their performance can also be found in Table 2 of the WACV 2024 paper). You can then evaluate your proposals or the baseline proposals by running 'python3 evaluate_proposals.py DETECTOR_PROPOSALS_FILE ANNOTATION_FILE' (ex: python3 evaluate_proposals.py motifs2018_proposals.bin vg_gt_thres30.json) where the ANNOTATION_FILE refers to one of the thresholded annotation sets found in 'detector_benchmark/thresholded_annotations'. **We recommend reporting Precision, Recall, and F1 score with both a threshold of 0.075 and 0.30 corresponding to 'vg_gt_thres075.json' and 'vg_gt_thres30.json', respectively**
 
 ### Semantic Grounding Algorithm Usage
 Run 'python3 generate_human_survey_importance_scores.py' to generate a dictionary in './generated_COCO_survey_score.json' containing COCO survey image information and "weight" scores corresponding to annotation importance. 
@@ -30,7 +30,7 @@ Joshua Feinglass (https://scholar.google.com/citations?user=V2h3z7oAAAAJ&hl=en)
 
 If you find this repo useful, please cite:
 ```
-@inproceedings{feinglass2021smurf,
+@inproceedings{feinglass2024vldet,
   title={Towards Addressing the Misalignment of Object Proposal Evaluation for Vision-Language Tasks via Semantic Grounding},
   author={Joshua Feinglass and Yezhou Yang},
   booktitle={Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision},
